@@ -7,19 +7,27 @@ function handleFileSelect(evt, isTypedArray) {
 
 	reader.onload = (function (file) {
 		return function (e) {
-			var extension = file.name.split(".")[1];
-
-			if (extension === "amr") {
+			if( filename.lastIndexOf("\.") > 0 ){
+				var extension = file.name.split(".")[1];
+	
+				if (extension === "amr") {
+					var samples = new AMR({
+					   	benchmark: true
+					}).decode(e.target.result);
+	
+					AMR.util.play(samples);
+				} else if (extension == "wav") {
+					var data = e.target.result;
+					encodeWAV(data);
+				} else if (extension == "pcm" && isTypedArray) {
+					encodeRawPCM(new Int16Array(e.target.result));
+				}	
+			}else{
 				var samples = new AMR({
-				   	benchmark: true
-				}).decode(e.target.result);
-
-				AMR.util.play(samples);
-			} else if (extension == "wav") {
-				var data = e.target.result;
-				encodeWAV(data);
-			} else if (extension == "pcm" && isTypedArray) {
-				encodeRawPCM(new Int16Array(e.target.result));
+			                benchmark: true
+			        }).decode(e.target.result);
+			
+			        AMR.util.play(samples);	
 			}
 		}
 	})(f);
